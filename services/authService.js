@@ -1,32 +1,28 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const {verify} = require("jsonwebtoken");
+const ApiError = require('../exceptions/ApiError');
 
 class AuthService {
-    generateTokens(userId) {
-        const accessToken = jwt.sign(
-            { userId },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRE }
-        );
 
-        const refreshToken = jwt.sign(
-            { userId },
-            process.env.JWT_REFRESH_SECRET,
-            { expiresIn: process.env.JWT_REFRESH_EXPIRE }
-        );
-
-        return { accessToken, refreshToken };
+    daysToMs(daysCount) {
+        return daysCount * 24 * 60 * 60 * 1000;
     }
 
-    async registerUser(userData) {
-        const { email, password, firstName, lastName, role } = userData;
 
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            throw new Error('User already exists');
+    userToDTO(user) {
+        return {
+            id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role
         }
+    }
 
+
+    userDTOToUser(userDTO) {
+        const {email, password, firstName, lastName, role} = userDTO;
         const user = new User({
             email,
             password,
@@ -34,73 +30,97 @@ class AuthService {
             lastName,
             role
         });
+        return user;
+    }
 
-        const { accessToken, refreshToken } = this.generateTokens(user._id);
+
+    setCookies(res, refreshToken) {
+        console.log("refresh", refreshToken);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            sameSite: 'None',
+            secure: false,
+            maxAge: this.daysToMs(process.env.JWT_REFRESH_EXPIRE_DAYS),
+        });
+    }
+
+
+    generateTokens(userId) {
+        console.log(process.env.JWT_EXPIRE);
+        const accessToken = jwt.sign(
+            {userId},
+            process.env.JWT_SECRET,
+            {expiresIn: process.env.JWT_EXPIRE}
+        );
+
+        const refreshToken = jwt.sign(
+            {userId},
+            process.env.JWT_REFRESH_SECRET,
+            {expiresIn: process.env.JWT_EXPIRE}
+        );
+
+        return {accessToken, refreshToken};
+    }
+
+
+    async registerUser(userData) {
+        const {email, password, firstName, lastName, role} = userData;
+
+        const existingUser = await User.findOne({email});
+        if (existingUser) {
+            throw ApiError.BadRequestError('User already exists');
+        }
+
+        const user = this.userDTOToUser(userData);
+
+        const {accessToken, refreshToken} = this.generateTokens(user._id);
         user.refreshToken = refreshToken;
 
         await user.save();
 
-        // Send email notification
         console.log(`📧 Email notification: Welcome ${firstName} ${lastName}!`);
 
         return {
-            user: {
-                id: user._id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                role: user.role
-            },
-            tokens: {
-                accessToken,
-                refreshToken
-            }
+            user: this.userToDTO(user),
+            accessToken,
+            refreshToken
         };
     }
 
+
     async loginUser(email, password) {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({email});
         if (!user) {
-            throw new Error('Invalid credentials');
+            throw ApiError.BadRequestError('Invalid credentials');
         }
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            throw new Error('Invalid credentials');
+            throw ApiError.BadRequestError('Invalid credentials');
         }
 
-        const { accessToken, refreshToken } = this.generateTokens(user._id);
+        const {accessToken, refreshToken} = this.generateTokens(user._id);
         user.refreshToken = refreshToken;
         await user.save();
 
         return {
-            user: {
-                id: user._id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                role: user.role
-            },
-            tokens: {
-                accessToken,
-                refreshToken
-            }
+            user: this.userToDTO(user),
+            accessToken,
+            refreshToken
         };
     }
 
+
     async refreshToken(refreshToken) {
-        if (!refreshToken) {
-            throw new Error('Refresh token required');
-        }
 
         const decoded = verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         const user = await User.findById(decoded.userId);
 
         if (!user || user.refreshToken !== refreshToken) {
-            throw new Error('Invalid refresh token');
+            throw ApiError.BadRequestError('Invalid refresh token');
         }
 
-        const { accessToken, refreshToken: newRefreshToken } = this.generateTokens(user._id);
+        const {accessToken, refreshToken: newRefreshToken} = this.generateTokens(user._id);
         user.refreshToken = newRefreshToken;
         await user.save();
 
@@ -110,15 +130,17 @@ class AuthService {
         };
     }
 
+
     async logoutUser(userId) {
         const user = await User.findById(userId);
         if (!user) {
-            throw new Error('User not found');
+            throw ApiError.NotFoundError('User is not found');
         }
 
         user.refreshToken = null;
         await user.save();
     }
+
 }
 
 module.exports = new AuthService();

@@ -1,4 +1,5 @@
 const Service = require('../models/Service');
+const ApiError = require('../exceptions/ApiError');
 
 class ServiceService {
     async createService(serviceData, providerId) {
@@ -35,46 +36,12 @@ class ServiceService {
             .populate('provider', 'firstName lastName email');
 
         if (!service) {
-            throw new Error('Service not found');
+            throw ApiError.NotFoundError('Service not found');
         }
 
         return service;
     }
 
-    async updateService(serviceId, serviceData, providerId) {
-        const service = await Service.findById(serviceId);
-
-        if (!service) {
-            throw new Error('Service not found');
-        }
-
-        if (service.provider.toString() !== providerId.toString()) {
-            throw new Error('Access denied');
-        }
-
-        const updatedService = await Service.findByIdAndUpdate(
-            serviceId,
-            serviceData,
-            { new: true }
-        ).populate('provider', 'firstName lastName email');
-
-        return updatedService;
-    }
-
-    async deleteService(serviceId, providerId) {
-        const service = await Service.findById(serviceId);
-
-        if (!service) {
-            throw new Error('Service not found');
-        }
-
-        if (service.provider.toString() !== providerId.toString()) {
-            throw new Error('Access denied');
-        }
-
-        service.isActive = false;
-        await service.save();
-    }
 }
 
 module.exports = new ServiceService();

@@ -2,16 +2,8 @@ const {validationResult} = require('express-validator');
 const serviceService = require('../services/serviceService');
 
 class ServiceController {
-    async create(req, res) {
+    async create(req, res, next) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({
-                    success: false,
-                    errors: errors.array()
-                });
-            }
-
             const service = await serviceService.createService(req.body, req.user._id);
 
             res.status(201).json({
@@ -20,14 +12,11 @@ class ServiceController {
                 service
             });
         } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: error.message
-            });
+            next(error)
         }
     }
 
-    async getAll(req, res) {
+    async getAll(req, res, next) {
         try {
             const {providerId} = req.query;
             const services = await serviceService.getAllServices(providerId);
@@ -37,14 +26,11 @@ class ServiceController {
                 services
             });
         } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: error.message
-            });
+            next(error)
         }
     }
 
-    async getById(req, res) {
+    async getById(req, res, next) {
         try {
             const service = await serviceService.getServiceById(req.params.id);
 
@@ -53,10 +39,7 @@ class ServiceController {
                 service
             });
         } catch (error) {
-            res.status(404).json({
-                success: false,
-                message: error.message
-            });
+            next(error)
         }
     }
 }

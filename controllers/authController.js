@@ -1,44 +1,29 @@
-const { validationResult } = require('express-validator');
 const authService = require('../services/authService');
+const {auth} = require("../middlewares/authMiddleware");
+const {token} = require("morgan");
 
 class AuthController {
-    async register(req, res) {
+
+    async register(req, res, next) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({
-                    success: false,
-                    errors: errors.array()
-                });
-            }
-
-            const result = await authService.registerUser(req.body);
-
+            const {refreshToken, ...result} = await authService.registerUser(req.body);
+            authService.setCookies(res, refreshToken);
             res.status(201).json({
                 success: true,
                 message: 'User registered successfully',
                 ...result
             });
         } catch (error) {
-            res.status(400).json({
-                success: false,
-                message: error.message
-            });
+            next(error)
         }
     }
 
-    async login(req, res) {
+    async login(req, res, next) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({
-                    success: false,
-                    errors: errors.array()
-                });
-            }
-
-            const { email, password } = req.body;
-            const result = await authService.loginUser(email, password);
+            const {email, password} = req.body;
+            const {refreshToken, ...result} = await authService.loginUser(email, password);
+            console.log("setCookies")
+            authService.setCookies(res, refreshToken);
 
             res.json({
                 success: true,
@@ -46,43 +31,34 @@ class AuthController {
                 ...result
             });
         } catch (error) {
-            res.status(400).json({
-                success: false,
-                message: error.message
-            });
+            next(error)
         }
     }
 
-    async refresh(req, res) {
+    async refresh(req, res, next) {
         try {
-            const { refreshToken } = req.body;
+            const {refreshToken} = req.cookies;
             const tokens = await authService.refreshToken(refreshToken);
-
+            authService.setCookies(res, tokens.refreshToken);
             res.json({
                 success: true,
-                tokens
+                accessToken: tokens.accessToken
             });
         } catch (error) {
-            res.status(401).json({
-                success: false,
-                message: error.message
-            });
+            next(error)
         }
     }
 
-    async logout(req, res) {
+    async logout(req, res, next) {
         try {
-            await authService.logoutUser(req.id);
-
+            await authService.logoutUser(req.user._id);
+            res.clearCookie('refreshToken');
             res.json({
                 success: true,
                 message: 'Logged out successfully'
             });
         } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: error.message
-            });
+            next(error)
         }
     }
 }

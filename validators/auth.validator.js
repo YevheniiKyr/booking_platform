@@ -1,7 +1,10 @@
 const Joi = require('joi');
+const Roles = require('../consts/roles');
 
 const registerSchema = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
+    firstName: Joi.string().min(2).max(30).required(),
+    lastName: Joi.string().min(2).max(30).required(),
+    role: Joi.string().valid(...Object.values(Roles)),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required()
 });
@@ -15,13 +18,9 @@ const refreshSchema = Joi.object({
     refreshToken: Joi.string().required(),
 })
 
-const logoutSchema = Joi.object({
-    id: Joi.string().required(),
-})
 
 module.exports = {
     registerSchema,
     loginSchema,
-    logoutSchema,
     refreshSchema,
 };

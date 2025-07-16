@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const BookingStatuses = require("../consts/bookingStatuses");
 
 const bookingSchema = new mongoose.Schema({
     service: {
@@ -26,7 +27,7 @@ const bookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'confirmed', 'cancelled'],
+        enum: Object.values(BookingStatuses),
         default: 'pending'
     },
     totalPrice: {
@@ -37,7 +38,6 @@ const bookingSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for efficient availability checks
 bookingSchema.index({ provider: 1, startTime: 1, endTime: 1 });
 
 module.exports = mongoose.model('Booking', bookingSchema);

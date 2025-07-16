@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const availabilitySchema = Joi.object({
-    providerId: Joi.string().required(),
+    providerId: Joi.string().length(24).hex().required(),
     data: Joi.date().required(),
 });
 
