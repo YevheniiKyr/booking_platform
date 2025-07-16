@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const {Confirmed, Canceled} = require("../consts/bookingStatuses");
+const BookingStatuses = require("../consts/bookingStatuses");
 
 const bookingSchema = Joi.object({
     serviceId: Joi.string().length(24).hex().required(),
@@ -7,7 +7,7 @@ const bookingSchema = Joi.object({
 })
 
 const updateBookingSchema = Joi.object({
-    status: Joi.string().valid(Confirmed, Canceled).required()
+    status: Joi.string().valid(...Object.values(BookingStatuses)).required()
 })
 
 module.exports = {

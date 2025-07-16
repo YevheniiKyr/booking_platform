@@ -14,8 +14,6 @@ class BookingService {
             [BookingStatuses.Confirmed]: `📧 Email to ${email}: Your booking for ${service} has been confirmed!`,
             [BookingStatuses.Canceled]: `📧 Email to ${email}: Your booking for ${service} has been cancelled.`
         };
-
-        console.log(messages[type]);
     }
 
 
@@ -57,21 +55,20 @@ class BookingService {
 
 
     async updateBookingStatus(bookingId, status, providerId) {
+
         const booking = await Booking.findById(bookingId)
-            .populate(['service', 'client', 'provider']);
 
         if (!booking) {
-            throw new Error('Booking not found');
+            throw ApiError.NotFoundError('Booking not found');
         }
 
         if (booking.provider._id.toString() !== providerId.toString()) {
-            throw new Error('Access denied');
+            throw ApiError.AccessDeniedError();
         }
 
         booking.status = status;
         await booking.save();
 
-        // Send notification to client
         this.sendEmailNotification(status, booking, booking.client);
 
         return booking;

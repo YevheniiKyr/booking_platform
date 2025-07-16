@@ -27,7 +27,7 @@ class BookingController {
 
             res.json({
                 success: true,
-                message: `Booking ${status} successfully`,
+                message: `Booking status set to ${status} successfully`,
                 booking
             });
         } catch (error) {

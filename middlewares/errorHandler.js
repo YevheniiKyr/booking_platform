@@ -10,4 +10,3 @@ module.exports = (err, req, res, next) => {
         message: 'Something went wrong!',
     });
 };
-//wws3eweded

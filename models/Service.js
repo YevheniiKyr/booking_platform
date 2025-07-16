@@ -11,7 +11,7 @@ const serviceSchema = new mongoose.Schema({
     },
     duration: {
         type: Number,
-        required: true, // в хвилинах
+        required: true,
         min: 1
     },
     price: {

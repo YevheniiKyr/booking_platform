@@ -14,4 +14,3 @@ router.post('/refresh', validate(refreshSchema), authController.refresh);
 router.post('/logout', auth, authController.logout);
 
 module.exports = router;
-//wws
