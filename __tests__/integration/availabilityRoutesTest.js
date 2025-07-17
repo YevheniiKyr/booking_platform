@@ -1,67 +1,56 @@
-describe("Logout tests", () => {
 
-    it("successfully log out", async () => {
-        expect(2+2).toBe(4);
+const request = require("supertest")
+const mongoose = require("mongoose");
+const app = require("../../app");
+const { MongoMemoryServer } = require("mongodb-memory-server");
+const User = require('../../models/User');
+const Roles = require("../../consts/roles");
+const {provider, connectMongo, disconnectMongo} = require("./utils/shared");
+const diagnostics_channel = require("node:diagnostics_channel");
+
+const availabilityRoute = '/api/availability'
+let providerId;
+
+
+beforeAll(async () => {
+    await connectMongo()
+    const user = await User.create(provider)
+    providerId = user._id.toString();
+});
+
+afterAll(async () => {
+    await User.deleteMany({});
+    await disconnectMongo();
+});
+
+
+describe("get provider availability", () => {
+
+    it("successfully get", async () => {
+        const response = await request(app)
+            .get(availabilityRoute)
+            .query({providerId})
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.freeSlots).toBeDefined();
+    })
+
+    it("failed get because of non valid provider id", async () => {
+        const badProviderId = 'bad' + providerId;
+        const response = await request(app)
+            .get(availabilityRoute)
+            .query({providerId: badProviderId})
+
+        expect(response.statusCode).toBe(400);
+    })
+
+    it("failed get because of non existence provider id", async () => {
+        const newSymbol = providerId.at(-1) === 'a' ? 'b' : 'a'
+        const badProviderId = providerId.slice(0, -1) + newSymbol;
+        const response = await request(app)
+            .get(availabilityRoute)
+            .query({providerId: badProviderId})
+
+        expect(response.statusCode).toBe(404);
     })
 })
-// const request = require("supertest")
-// const mongoose = require("mongoose");
-// const app = require("../../app");
-// const { MongoMemoryServer } = require("mongodb-memory-server");
-// const User = require('../../models/User');
-// const Roles = require("../../consts/roles");
-//
-// let mongoServer;
-//
-// const availabilityRoute = '/api/availability'
-// const USER_EMAIL = "petro@gmail.com"
-// const USER_PASSWORD = "password"
-// let providerId;
-//
-// const provider = {
-//     firstName: "Petro",
-//     lastName: "Biba",
-//     email: USER_EMAIL,
-//     password: USER_PASSWORD,
-//     role: Roles.Provider
-// }
-//
-// beforeAll(async () => {
-//     mongoServer = await MongoMemoryServer.create();
-//     const uri = mongoServer.getUri();
-//     await mongoose.connect(uri, {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true,
-//     })
-//     const user = await User.create(provider)
-//     providerId = user._id.toString();
-//     console.log("provider id", providerId)
-// });
-//
-// afterAll(async () => {
-//     await User.deleteMany({});
-//     await mongoose.disconnect();
-//     await mongoServer.stop();
-// });
-//
-//
-// describe("get provider availability", () => {
-//
-//     it("successfully get", async () => {
-//         const response = await request(app)
-//             .get(availabilityRoute)
-//             .query({providerId})
-//
-//         expect(response.statusCode).toBe(200);
-//         expect(response.body.freeSlots).toBeDefined();
-//     })
-//
-//     it("failed get because of non existence provider", async () => {
-//         const badProviderId = 'bad' + providerId;
-//         const response = await request(app)
-//             .get(availabilityRoute)
-//             .query({providerId: badProviderId})
-//
-//         expect(response.statusCode).toBe(400);
-//     })
-// })

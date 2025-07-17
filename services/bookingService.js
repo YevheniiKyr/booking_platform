@@ -69,7 +69,7 @@ class BookingService {
         booking.status = status;
         await booking.save();
 
-        this.sendEmailNotification(status, booking, booking.client);
+        this.sendEmailNotification(status, booking);
 
         return booking;
     }

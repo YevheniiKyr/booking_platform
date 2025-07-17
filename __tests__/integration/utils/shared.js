@@ -20,6 +20,13 @@ const client = {
     password: "password"
 }
 
+const service = {
+    name: "massage",
+    description: "Magic Service",
+    duration: 30,
+    price: 300
+}
+
 const connectMongo = async () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
@@ -41,4 +48,4 @@ const getRefreshToken = (response) => {
     return refreshToken;
 }
 
-module.exports =  {provider, client, connectMongo, disconnectMongo, getCookieValue: getRefreshToken};
+module.exports =  {provider, client, connectMongo, disconnectMongo, getRefreshToken, service};
