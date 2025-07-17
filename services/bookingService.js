@@ -46,7 +46,6 @@ class BookingService {
         });
 
         await booking.save();
-        await booking.populate(['service', 'client', 'provider']);
 
         this.sendEmailNotification(BookingStatuses.Pending, booking);
 

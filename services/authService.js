@@ -136,7 +136,7 @@ class AuthService {
     async logoutUser(userId) {
         const user = await User.findById(userId);
         if (!user) {
-            throw ApiError.NotFoundError('User is not found');
+            throw ApiError.UnauthorizedError();
         }
 
         user.refreshToken = null;

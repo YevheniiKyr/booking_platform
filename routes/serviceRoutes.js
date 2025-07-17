@@ -7,6 +7,53 @@ const validate = require("../middlewares/validate");
 const validateParamsId = require("../middlewares/validateParamsId");
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Service
+ *   description: Service management
+ */
+
+/**
+ * @swagger
+ * /api/bookings:
+ *   post:
+ *     summary: Create new service
+ *     tags: [Service]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ServiceCreate'
+ *     responses:
+ *       201:
+ *         description: Successful service creation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ServiceResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized access
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Access denied
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.post(
     '/',
     auth,

@@ -3,6 +3,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const helmet = require('helmet');
 const morgan = require('morgan');
+const setupSwagger = require('./docs/swagger');
+
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
@@ -14,6 +16,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const notFound = require('./middlewares/notFoundHandler');
 
 const app = express();
+setupSwagger(app);
 
 app.use(helmet());
 app.use(cors({
