@@ -1,16 +1,20 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const ApiError = require("../exceptions/apiError");
+const ApiError = require('../exceptions/ApiError');
 
 const auth = async (req, res, next) => {
     try {
+        let decoded;
         const token = req.header('Authorization')?.replace('Bearer ', '');
-
         if (!token) {
             throw ApiError.UnauthorizedError();
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        try{
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (error) {
+            throw ApiError.UnauthorizedError();
+        }
         const user = await User.findById(decoded.userId);
 
         if (!user) {

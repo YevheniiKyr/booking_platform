@@ -1,6 +1,4 @@
 const authService = require('../services/authService');
-const {auth} = require("../middlewares/authMiddleware");
-const {token} = require("morgan");
 
 class AuthController {
 
@@ -22,7 +20,6 @@ class AuthController {
         try {
             const {email, password} = req.body;
             const {refreshToken, ...result} = await authService.loginUser(email, password);
-            console.log("setCookies")
             authService.setCookies(res, refreshToken);
 
             res.json({

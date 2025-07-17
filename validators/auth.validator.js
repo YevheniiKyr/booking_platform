@@ -14,13 +14,8 @@ const loginSchema = Joi.object({
     password: Joi.string().min(6).required()
 })
 
-const refreshSchema = Joi.object({
-    refreshToken: Joi.string().required(),
-})
-
 
 module.exports = {
     registerSchema,
     loginSchema,
-    refreshSchema,
 };

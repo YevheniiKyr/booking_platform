@@ -35,7 +35,6 @@ class AuthService {
 
 
     setCookies(res, refreshToken) {
-        console.log("refresh", refreshToken);
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             sameSite: 'None',
@@ -46,7 +45,6 @@ class AuthService {
 
 
     generateTokens(userId) {
-        console.log(process.env.JWT_EXPIRE);
         const accessToken = jwt.sign(
             {userId},
             process.env.JWT_SECRET,
@@ -112,12 +110,16 @@ class AuthService {
 
 
     async refreshToken(refreshToken) {
-
-        const decoded = verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        let decoded;
+        try {
+             decoded = verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        } catch (error) {
+            throw ApiError.UnauthorizedError();
+        }
         const user = await User.findById(decoded.userId);
 
         if (!user || user.refreshToken !== refreshToken) {
-            throw ApiError.BadRequestError('Invalid refresh token');
+            throw ApiError.UnauthorizedError();
         }
 
         const {accessToken, refreshToken: newRefreshToken} = this.generateTokens(user._id);
