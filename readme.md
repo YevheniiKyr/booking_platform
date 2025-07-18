@@ -37,39 +37,39 @@ Express.js, MongoDB
 
 ## Architecture
 ### Request flow
-The main structure consists of folders for routes, controllers, services, models, validators,
-middleware, errors, documentation, tests, and constants.
-The router accepts requests. The router has middleware for data validation (body, params, query). The middleware for authorization and
-role verification is also called in the router.  
+The main structure consists of folders for *routes, controllers, services, models, validators,
+middleware, errors, documentation, tests, and constants*.  
+The router accepts requests. The router has middlewares for data validation (body, params, query). The middleware for authorization and
+role verification are also called in the router.  
 After successfully passing the middleware, the request is sent to the controller. It retrieves the necessary data from the request and then calls the service methods.
 The service executes the necessary business logic and accesses the model to save or retrieve data.  
 Methods defined on the model help to work with the database.
 
 ### Folders
-The tests folder contains API integration tests and unit tests for services.  
-The constants folder stores unchanged data that is used in many places in the program.  
-The controllers folder contains controllers.  
-The docs folder contains the configuration file for the swagger and the definition of request and response schemes.  
-The errors folder defines a class of errors related to the API. Errors are actively used in services.
+**tests** folder contains API integration tests and unit tests for services.  
+**constants** folder stores unchanged data that is used in many places in the program.  
+**controllers** folder contains controllers.  
+**docs** folder contains the configuration file for the swagger and the definition of request and response schemes.  
+**errors** folder defines a class of errors related to the API. Errors are actively used in services.
 Errors are handled using the errorHandler middleware in the middlewares folder.  
-The middlewares folder contains middlewares for error handling; validation of body, query and request parameters;
+**middlewares** folder contains middlewares for error handling; validation of body, query and request parameters;
 authorization and authentication.  
-The models folder contains the mongoose models for the Mongo database.  
-The routes folder contains api routes. Each route has a defined swagger documentation.
-The services folder contains services with main application logic.  
-The validators folder contains validators for the request body, params and query parameters.  
-The root also contains the docker file to build the image, the jest config, and the json package.
-The app file defines all the server components - routers, swagger, and middleware necessary for the appropriate work.  
-The index file is a main launch file used to connect to the Mongo cloud database and start the server.
+**models** folder contains the mongoose models for the Mongo database.  
+**routes** folder contains api routes. Each route has a defined swagger documentation.  
+**services** folder contains services with main application logic.  
+**validators** folder contains validators for the request body, params and query parameters.  
+**root** also contains the docker file to build the image, the jest config, and the json package.  
+**app** file defines all the server components - routers, swagger, and middlewares necessary for the appropriate work.  
+**index** file is a main launch file used to connect to the Mongo cloud database and start the server.
 
 ## Launch
 To launch the project
 1) create mongo database 
-2) create .env file in the root directory with fields defined in env
-3) go to the project directory and run the command in the terminal "npm run dev"
+2) create .env file in the root directory with fields defined in [env](#env-file)
+3) go to the project directory and run the command in the terminal ```npm run dev```
 
 ## Query Examples
-/POST api/auth/register  
+`/POST api/auth/register`  
 {  
 "email": "emailexample@gmail.com",  
 "password": "password"  
@@ -77,21 +77,21 @@ To launch the project
 "lastName": "Shevchenko"  
 }
 
-/POST api/auth/login  
-{  
+`/POST api/auth/login`   
+{    
 "email": "email@gmail.com",  
 "password": "password"  
 }
 
-/POST api/auth/refresh  
+`/POST api/auth/refresh`  
 {}  
 (refreshToken дістається з кукі)
 
-/POST api/auth/logout   
+`/POST api/auth/logout`   
 {}  
 (accessToken дістається з Authorization header)
 
-/POST api/service  
+`/POST api/service`  
 {  
 "name": "nails",  
 "description": "long nails",  
@@ -99,22 +99,22 @@ To launch the project
 "price": 200  
 } 
 
-/GET api/services
+`/GET api/services`
 
-/GET api/services/6877780144bdbc1347bbc53a
+`/GET api/services/6877780144bdbc1347bbc53a`
 
-/POST api/bookings  
+`/POST api/bookings`  
 {  
 "serviceId": "6877780144bdbc1347bbc53a",
 "startTime": "2026-08-16T07:00:00.000Z"  
 }  
 
-/PUT api/bookings/6877cb2598ed81aa19934511/status  
+`/PUT api/bookings/6877cb2598ed81aa19934511/status`  
 {  
 "status": "pending"  
 }  
 
-/GET api/availability?providerId=68775b845adfdf63acfa1cfd&date=2026-08-16T00:00:00.000Z  
+`/GET api/availability?providerId=68775b845adfdf63acfa1cfd&date=2026-08-16T00:00:00.000Z`  
 
 ## env file
 MONGODB_URI=mongo_uri  
