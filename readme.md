@@ -1,5 +1,5 @@
 # Booking platform
-Develop a backend for a service booking service (e.g., beauty salon, gym, consultations). The system allows users to book services from performers.
+Develop a backend for a booking service (e.g., beauty salon, gym, consultations). The system allows users to book services from performers.
 
 ---
 ## 📚 Table of Contents
