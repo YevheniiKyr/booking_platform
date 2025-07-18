@@ -9,19 +9,19 @@ class ApiError extends Error {
         this.errors = errors;
     }
 
-    static BadRequestError(message, errors){
+    static BadRequestError(message, errors) {
         return new ApiError(400, message, errors);
     }
 
-    static UnauthorizedError(){
+    static UnauthorizedError() {
         return new ApiError(401, 'Unauthorized');
     }
 
-    static AccessDeniedError(){
+    static AccessDeniedError() {
         return new ApiError(403, 'Access denied');
     }
 
-    static NotFoundError(message){
+    static NotFoundError(message) {
         return new ApiError(404, message);
     }
 

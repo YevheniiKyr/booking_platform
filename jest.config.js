@@ -1,3 +1,3 @@
 module.exports = {
-    testPathIgnorePatterns: ["<rootDir>/__tests__/integration/utils/"]
+    testPathIgnorePatterns: ["<rootDir>/__tests__/integration/*"]
 };

@@ -1,4 +1,3 @@
-const {validationResult} = require('express-validator');
 const serviceService = require('../services/serviceService');
 
 class ServiceController {

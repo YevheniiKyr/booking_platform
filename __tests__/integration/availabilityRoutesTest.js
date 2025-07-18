@@ -1,12 +1,7 @@
-
 const request = require("supertest")
-const mongoose = require("mongoose");
 const app = require("../../app");
-const { MongoMemoryServer } = require("mongodb-memory-server");
 const User = require('../../models/User');
-const Roles = require("../../consts/roles");
 const {provider, connectMongo, disconnectMongo} = require("./utils/shared");
-const diagnostics_channel = require("node:diagnostics_channel");
 
 const availabilityRoute = '/api/availability'
 let providerId;

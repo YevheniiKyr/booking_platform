@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const {verify} = require("jsonwebtoken");
 const ApiError = require('../exceptions/ApiError');
 
 class AuthService {
@@ -112,7 +111,7 @@ class AuthService {
     async refreshToken(refreshToken) {
         let decoded;
         try {
-             decoded = verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+            decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         } catch (error) {
             throw ApiError.UnauthorizedError();
         }

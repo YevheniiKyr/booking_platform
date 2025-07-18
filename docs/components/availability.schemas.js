@@ -1,5 +1,3 @@
-const Roles = require('../../consts/roles');
-
 module.exports = {
     AvailabilityQueryParams: {
         type: 'object',
