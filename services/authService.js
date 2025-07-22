@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const ApiError = require('../exceptions/apiError');
+const {emailQueue} = require("../bullConfig");
 
 class AuthService {
 
@@ -75,7 +76,7 @@ class AuthService {
 
         await user.save();
 
-        console.log(`📧 Email notification: Welcome ${firstName} ${lastName}!`);
+        await emailQueue.add({email, message: `📧 Email notification: Welcome ${firstName} ${lastName}!`});
 
         return {
             user: this.userToDTO(user),

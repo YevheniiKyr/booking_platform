@@ -119,7 +119,7 @@ router.post(
 router.put(
     '/:id/status',
     auth,
-    checkRole([Roles.Provider]),
+    checkRole([Roles.Provider, Roles.Client] ),
     validate(updateBookingSchema),
     validateParamsId(),
     bookingController.updateStatus

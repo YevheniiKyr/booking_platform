@@ -1,19 +1,22 @@
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
+const User = require('../models/Service');
 const AvailabilityService = require('../services/availabilityService');
 const ApiError = require('../exceptions/apiError');
 const BookingStatuses = require("../consts/bookingStatuses");
+const { emailQueue } = require('../bullConfig');
 
 class BookingService {
 
-    sendEmailNotification(type, booking) {
+    async sendEmailNotification(type, booking) {
         const email = booking.client.email;
-        const service = booking.service.name
+        const service = booking.service.name;
         const messages = {
             [BookingStatuses.Pending]: `📧 Email to ${email}: Your booking for ${service} has been created and is pending confirmation.`,
             [BookingStatuses.Confirmed]: `📧 Email to ${email}: Your booking for ${service} has been confirmed!`,
             [BookingStatuses.Canceled]: `📧 Email to ${email}: Your booking for ${service} has been cancelled.`
         };
+        await emailQueue.add({email, message: messages[type]})
     }
 
 
@@ -44,10 +47,10 @@ class BookingService {
             endTime: end,
             totalPrice: service.price
         });
-
         await booking.save();
+        await booking.populate('service client');
 
-        this.sendEmailNotification(BookingStatuses.Pending, booking);
+        await this.sendEmailNotification(BookingStatuses.Pending, booking);
 
         return booking;
     }
@@ -68,7 +71,8 @@ class BookingService {
         booking.status = status;
         await booking.save();
 
-        this.sendEmailNotification(status, booking);
+        await booking.populate('service client');
+        await this.sendEmailNotification(status, booking);
 
         return booking;
     }
