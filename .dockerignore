@@ -2,7 +2,6 @@ node_modules
 .idea
 __tests__
 jest.config.js
-docker-compose.yml
-Dockerfile
-.dockerignore
 *.log
+.git
+.gitignore

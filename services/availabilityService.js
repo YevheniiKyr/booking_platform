@@ -2,8 +2,9 @@ const Booking = require('../models/Booking');
 const User = require('../models/User');
 const BookingStatuses = require("../consts/bookingStatuses");
 const Roles = require("../consts/roles");
-const ApiError = require("../exceptions/ApiError");
-const WorkingHours = require("../consts/WorkingHours");
+const ApiError = require("../exceptions/apiError");
+const WorkingHours = require("../consts/workingHours");
+const redisClient = require('../redisConfig');
 
 class AvailabilityService {
 
@@ -32,6 +33,14 @@ class AvailabilityService {
 
 
     async getProviderAvailability(providerId, date) {
+
+        const key = `available-time:${date}`;
+        const cached = await redisClient.get(key);
+
+        if (cached) {
+            return {freeSlots: JSON.parse(cached)};
+        }
+
         const provider = await User.findById(providerId);
         if (!provider || provider.role !== Roles.Provider) {
             throw ApiError.NotFoundError('Provider not found');
@@ -72,6 +81,8 @@ class AvailabilityService {
                     });
                 }
         }
+
+        await redisClient.setEx(key, 600, JSON.stringify(timeSlots));
 
         return {
             freeSlots: timeSlots,

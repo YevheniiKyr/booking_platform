@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser')
 const helmet = require('helmet');
 const morgan = require('morgan');
 const setupSwagger = require('./docs/swagger');
+const rateLimiter = require('./middlewares/rateLimiter');
 
 require('dotenv').config();
 
@@ -18,6 +19,7 @@ const notFound = require('./middlewares/notFoundHandler');
 const app = express();
 setupSwagger(app);
 
+app.use(rateLimiter)
 app.use(helmet());
 app.use(cors({
     origin: '*',

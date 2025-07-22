@@ -1,5 +1,5 @@
 const Service = require('../models/Service');
-const ApiError = require('../exceptions/ApiError');
+const ApiError = require('../exceptions/apiError');
 
 class ServiceService {
     async createService(serviceData, providerId) {

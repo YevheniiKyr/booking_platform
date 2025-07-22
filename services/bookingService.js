@@ -1,7 +1,7 @@
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
-const AvailabilityService = require('../services/AvailabilityService');
-const ApiError = require('../exceptions/ApiError');
+const AvailabilityService = require('../services/availabilityService');
+const ApiError = require('../exceptions/apiError');
 const BookingStatuses = require("../consts/bookingStatuses");
 
 class BookingService {
